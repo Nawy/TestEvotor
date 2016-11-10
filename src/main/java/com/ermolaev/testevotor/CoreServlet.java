@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Optional;
 
 /**
@@ -37,11 +36,11 @@ public class CoreServlet extends HttpServlet {
                 getBalance(xmlRequest, resp.getWriter());
             }
             else {
-                internalError(resp.getWriter());
+                sendError(ResultCode.INTERNAL_ERROR, resp.getWriter());
             }
         }
         catch (Exception e) {
-            internalError(resp.getWriter());
+            sendError(ResultCode.INTERNAL_ERROR, resp.getWriter());
         }
     }
 
@@ -78,22 +77,25 @@ public class CoreServlet extends HttpServlet {
             statement.setString(1, loginExtra.get().getValue());
 
             ResultSet resultSet = statement.executeQuery();
-            if(resultSet != null && resultSet.getFetchSize() == 1) {
-                String login = resultSet.getString(1);
-                String password = resultSet.getString(2);
-                BigDecimal balance = resultSet.getBigDecimal(3);
 
-                if(!password.equals(passwordExtra.get().getValue())) {
-                    internalError(writer);
-                    return;
-                }
+            if(resultSet == null || resultSet.getFetchSize() == 1) {
+                sendError(ResultCode.USER_NOT_FOUND, writer);
+            }
+
+            String login = resultSet.getString(1);
+            String password = resultSet.getString(2);
+            BigDecimal balance = resultSet.getBigDecimal(3);
+
+            if(!password.equals(passwordExtra.get().getValue())) {
+                sendError(ResultCode.INVALIDE_PASSWORD, writer);
+                return;
             }
         }
     }
 
-    public void internalError(Writer writer) {
+    public void sendError(int errorCode, Writer writer) {
         XmlResponse xmlResponse = new XmlResponse();
-        xmlResponse.setResultCode(ResultCode.INTERNAL_ERROR);
+        xmlResponse.setResultCode(errorCode);
         XmlUtils.convertXmlResponseToWriter(xmlResponse, writer);
     }
 }
