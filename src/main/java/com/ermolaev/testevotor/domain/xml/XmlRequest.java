@@ -1,14 +1,10 @@
 package com.ermolaev.testevotor.domain.xml;
 
 
-import com.ermolaev.testevotor.domain.RequestType;
-import com.ermolaev.testevotor.domain.xml.adapter.XmlRequestTypeAdapter;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.List;
 
 /**
@@ -20,19 +16,18 @@ import java.util.List;
 public class XmlRequest {
 
     @XmlElement(name = "request-type")
-    @XmlJavaTypeAdapter(XmlRequestTypeAdapter.class)
-    private RequestType requestType;
+    private String requestType;
 
     @XmlElement(name = "extra")
     private List<XmlExtra> extras;
 
     public XmlRequest() {}
 
-    public RequestType getRequestType() {
+    public String getRequestType() {
         return this.requestType;
     }
 
-    public void setRequestType(RequestType requestType) {
+    public void setRequestType(String requestType) {
         this.requestType = requestType;
     }
 

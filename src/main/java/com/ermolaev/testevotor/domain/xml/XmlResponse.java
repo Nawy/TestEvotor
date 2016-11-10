@@ -1,13 +1,10 @@
 package com.ermolaev.testevotor.domain.xml;
 
-import com.ermolaev.testevotor.domain.ResultCode;
-import com.ermolaev.testevotor.domain.xml.adapter.XmlResultTypeAdapter;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,19 +16,18 @@ import java.util.List;
 public class XmlResponse {
 
     @XmlElement(name = "result-code")
-    @XmlJavaTypeAdapter(XmlResultTypeAdapter.class)
-    private ResultCode resultCode;
+    private int resultCode;
 
     @XmlElement(name = "extra")
-    private List<XmlExtra> extras;
+    private List<XmlExtra> extras = new ArrayList<>();
 
     public XmlResponse() {}
 
-    public ResultCode getResultCode() {
+    public int getResultCode() {
         return this.resultCode;
     }
 
-    public void setResultCode(ResultCode resultCode) {
+    public void setResultCode(int resultCode) {
         this.resultCode = resultCode;
     }
 

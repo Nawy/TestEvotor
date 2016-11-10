@@ -23,11 +23,14 @@ public class CoreServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             final XmlRequest xmlRequest = XmlUtils.parseXmlRequestFromStream(req.getInputStream());
-            if(xmlRequest.getRequestType() == RequestType.CREATE_AGT) {
+            if(xmlRequest.getRequestType().equals(RequestType.CREATE_AGT)) {
                 createClient(xmlRequest, resp.getWriter());
             }
-            else if(xmlRequest.getRequestType() == RequestType.GET_BALANCE) {
+            else if(xmlRequest.getRequestType().equals(RequestType.GET_BALANCE)) {
                 getBalance(xmlRequest, resp.getWriter());
+            }
+            else {
+                internalError(resp.getWriter());
             }
         }
         catch (Exception e) {
