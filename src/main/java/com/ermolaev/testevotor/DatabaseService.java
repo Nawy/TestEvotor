@@ -1,5 +1,7 @@
 package com.ermolaev.testevotor;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,47 +12,35 @@ import java.sql.SQLException;
  */
 public class DatabaseService {
 
-    private static final String JDBC_DRIVER = "org.postgresql.Driver";
-    private static final String DB_URL = "jdbc:postgresql://localhost/testdb";
+    private static final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
+    private static final String JDBC_URL = "jdbc:mariadb://localhost/evotor_tst";
 
-    private static final String USER = "testadmin";
-    private static final String PASSWORD = "12345678";
+    private static final String USER = "evotor";
+    private static final String PASSWORD = "123456";
 
     private static DatabaseService instance;
 
     public static DatabaseService getInstance() {
+        if(instance != null) {
+            return instance;
+        }
+        instance = new DatabaseService();
         return instance;
     }
 
-    public static void init() {
-        instance = new DatabaseService();
-    }
-
-    public static void destroy() {
-        instance.close();
-    }
-
-
-    private Connection connection;
+    private final HikariDataSource dataSource;
 
     private DatabaseService() {
-        try {
-            Class.forName(JDBC_DRIVER);
-            connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        dataSource = new HikariDataSource();
+        dataSource.setMaximumPoolSize(20);
+        dataSource.setDriverClassName(JDBC_DRIVER);
+        dataSource.setJdbcUrl(JDBC_URL);
+        dataSource.addDataSourceProperty("user", USER);
+        dataSource.addDataSourceProperty("password", PASSWORD);
+        dataSource.setAutoCommit(false);
     }
 
-    public void close() {
-        try {
-            if(connection != null) {
-                connection.close();
-            }
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public Connection getConnection() throws Exception {
+        return dataSource.getConnection();
     }
 }
