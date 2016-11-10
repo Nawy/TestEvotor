@@ -2,6 +2,7 @@ package com.ermolaev.testevotor;
 
 import com.ermolaev.testevotor.domain.RequestType;
 import com.ermolaev.testevotor.domain.ResultCode;
+import com.ermolaev.testevotor.domain.xml.XmlExtra;
 import com.ermolaev.testevotor.domain.xml.XmlRequest;
 import com.ermolaev.testevotor.domain.xml.XmlResponse;
 
@@ -12,6 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * @author Ivan Ermolaev
@@ -40,7 +47,6 @@ public class CoreServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
         out.print("It's work!");
@@ -51,13 +57,38 @@ public class CoreServlet extends HttpServlet {
     }
 
     public void createClient(XmlRequest request, Writer writer) {
+
         XmlResponse response = new XmlResponse();
         response.setResultCode(ResultCode.USER_ALREADY_EXIST);
         XmlUtils.convertXmlResponseToWriter(response, writer);
     }
 
-    public void getBalance(XmlRequest request, Writer writer) {
+    public void getBalance(XmlRequest request, Writer writer) throws Exception {
 
+        Optional<XmlExtra> loginExtra = request.getExtras().stream().filter(ex -> ex.getName().equals("login")).findFirst();
+        Optional<XmlExtra> passwordExtra = request.getExtras().stream().filter(ex -> ex.getName().equals("password")).findFirst();
+
+        if(!loginExtra.isPresent() || !passwordExtra.isPresent()) {
+            throw new RuntimeException();
+        }
+
+        try(Connection conn = DatabaseService.getInstance().getConnection()) {
+            final String sqlGetUsers = "SELECT login, password, balance FROM users WHERE login=?";
+            PreparedStatement statement = conn.prepareStatement(sqlGetUsers);
+            statement.setString(1, loginExtra.get().getValue());
+
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet != null && resultSet.getFetchSize() == 1) {
+                String login = resultSet.getString(1);
+                String password = resultSet.getString(2);
+                BigDecimal balance = resultSet.getBigDecimal(3);
+
+                if(!password.equals(passwordExtra.get().getValue())) {
+                    internalError(writer);
+                    return;
+                }
+            }
+        }
     }
 
     public void internalError(Writer writer) {
