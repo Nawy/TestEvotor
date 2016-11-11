@@ -10,9 +10,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -95,7 +93,7 @@ public class XmlResponseTest {
     @Test
     public void testShouldWorkWithResultCode4() throws Exception {
         XmlResponse response = new XmlResponse();
-        response.setResultCode(ResultCode.INVALIDE_PASSWORD);
+        response.setResultCode(ResultCode.INVALID_PASSWORD);
 
         Writer writer = new StringWriter();
         XmlUtils.convertXmlResponseToWriter(response, writer);

@@ -39,11 +39,11 @@ public class CoreServlet extends HttpServlet {
                 getBalance(xmlRequest, resp.getWriter());
             }
             else {
-                sendError(ResultCode.INTERNAL_ERROR, resp.getWriter());
+                writeResponce(ResultCode.INTERNAL_ERROR, resp.getWriter());
             }
         }
         catch (Exception e) {
-            sendError(ResultCode.INTERNAL_ERROR, resp.getWriter());
+            writeResponce(ResultCode.INTERNAL_ERROR, resp.getWriter());
         }
     }
 
@@ -71,10 +71,13 @@ public class CoreServlet extends HttpServlet {
 
             statement.execute();
             conn.commit();
+
+            writeResponce(ResultCode.OK, writer);
         }
         catch (SQLException e) {
+            //запрос не получится выполнить, так как поле login является уникальным, значит пользователь существует
             if(SqlConstants.DUPLICATE_KEYS == e.getErrorCode()) {
-                sendError(ResultCode.USER_ALREADY_EXIST, writer);
+                writeResponce(ResultCode.USER_ALREADY_EXIST, writer);
             } else {
                 throw new RuntimeException(e);
             }
@@ -98,7 +101,7 @@ public class CoreServlet extends HttpServlet {
             ResultSet resultSet = statement.executeQuery();
 
             if(!resultSet.next()) {
-                sendError(ResultCode.USER_NOT_FOUND, writer);
+                writeResponce(ResultCode.USER_NOT_FOUND, writer);
                 return;
             }
 
@@ -106,7 +109,7 @@ public class CoreServlet extends HttpServlet {
             BigDecimal balance = resultSet.getBigDecimal(2);
 
             if(!password.equals(passwordExtra.get())) {
-                sendError(ResultCode.INVALIDE_PASSWORD, writer);
+                writeResponce(ResultCode.INVALID_PASSWORD, writer);
                 return;
             }
 
@@ -122,7 +125,7 @@ public class CoreServlet extends HttpServlet {
         }
     }
 
-    public void sendError(int errorCode, Writer writer) {
+    public void writeResponce(int errorCode, Writer writer) {
         XmlResponse xmlResponse = new XmlResponse();
         xmlResponse.setResultCode(errorCode);
         XmlUtils.convertXmlResponseToWriter(xmlResponse, writer);

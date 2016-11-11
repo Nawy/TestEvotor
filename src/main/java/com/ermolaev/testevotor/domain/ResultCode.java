@@ -10,5 +10,5 @@ public class ResultCode  {
     public static final int USER_ALREADY_EXIST = 1;
     public static final int INTERNAL_ERROR = 2;
     public static final int USER_NOT_FOUND = 3;
-    public static final int INVALIDE_PASSWORD = 4;
+    public static final int INVALID_PASSWORD = 4;
 }
