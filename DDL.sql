@@ -1,6 +1,3 @@
-CREATE USER 'evotor'@'localhost' IDENTIFIED BY '123456';
-GRANT ALL PRIVILEGES ON evotor_tst.* TO 'evotor'@'localhost';
-
 CREATE DATABASE evotor_tst;
 
 CREATE TABLE users (
