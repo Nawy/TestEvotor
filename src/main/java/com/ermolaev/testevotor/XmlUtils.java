@@ -8,6 +8,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 /**
  * @author Ivan Ermolaev
@@ -35,6 +37,9 @@ public class XmlUtils {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public static String balanceToString(BigDecimal balance) {
+        return balance.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     }
 }

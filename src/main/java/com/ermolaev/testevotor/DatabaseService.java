@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public class DatabaseService {
 
     private static final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-    private static final String JDBC_URL = "jdbc:mariadb://localhost/evotor_tst";
+    private static final String JDBC_URL = "jdbc:mariadb://localhost:3306/evotor_tst";
 
     private static final String USER = "evotor";
     private static final String PASSWORD = "123456";

@@ -5,8 +5,6 @@ import com.ermolaev.testevotor.domain.xml.XmlExtra;
 import com.ermolaev.testevotor.domain.xml.XmlRequest;
 import org.junit.Test;
 
-import javax.xml.bind.UnmarshalException;
-
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -28,6 +26,17 @@ public class XmlRequestTest {
     }
 
     @Test
+    public void testShouldReadExtraParamsAsParams() throws Exception {
+        ClassLoader loader = getClass().getClassLoader();
+        XmlRequest request = XmlUtils.parseXmlRequestFromStream(loader.getResourceAsStream("xmls/defaultCreateAgt.xml"));
+        request.prepare();
+
+        assertThat(request.getRequestType()).isEqualTo("CREATE-AGT");
+        assertThat(request.getExtraParam("login").get()).isEqualTo("123456");
+        assertThat(request.getExtraParam("password").get()).isEqualTo("pwd");
+    }
+
+    @Test
     public void testShouldReadDefaultGetBalance() throws Exception {
         ClassLoader loader = getClass().getClassLoader();
         XmlRequest request = XmlUtils.parseXmlRequestFromStream(loader.getResourceAsStream("xmls/defaultGetBalance.xml"));
@@ -37,7 +46,7 @@ public class XmlRequestTest {
         assertThat(request.getExtras()).contains(new XmlExtra("password", "pwd"));
     }
 
-    @Test(expected = UnmarshalException.class)
+    @Test(expected = RuntimeException.class)
     public void testInvalidXmlShouldThrowsException() throws Exception {
         ClassLoader loader = getClass().getClassLoader();
         XmlRequest request = XmlUtils.parseXmlRequestFromStream(loader.getResourceAsStream("xmls/invalidXml.xml"));

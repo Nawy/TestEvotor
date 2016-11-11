@@ -108,11 +108,10 @@ public class XmlResponseTest {
     @Test
     public void testShouldReturnCorrectBalance() throws Exception {
         BigDecimal balance = new BigDecimal(3250.123d);
-        DecimalFormat df = new DecimalFormat("#.##");
 
         XmlResponse response = new XmlResponse();
         response.setResultCode(ResultCode.OK);
-        response.getExtras().add(new XmlExtra("balance", df.format(balance)));
+        response.getExtras().add(new XmlExtra("balance", XmlUtils.balanceToString(balance)));
 
         Writer writer = new StringWriter();
         XmlUtils.convertXmlResponseToWriter(response, writer);
